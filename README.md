@@ -1,7 +1,5 @@
 # Pocket-Wiki
 
-# Pocket Wiki v2.0
-
 An offline, pocket-sized Wikipedia reader built on the ESP32. It allows you to search and read up to 100,000 Wikipedia articles entirely offline, loading text files instantly from an SD card using a custom directory indexing system.
 
 ## Hardware Requirements
