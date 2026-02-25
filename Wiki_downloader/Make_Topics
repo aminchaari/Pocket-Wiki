@@ -1,0 +1,46 @@
+import gzip
+from collections import Counter
+
+TOP_N = 100000 
+
+counter = Counter()
+
+print("Reading pageviews.gz (this may take a few minutes)...")
+
+# Added specific project codes for English Wikipedia
+# "en" = Desktop, "en.m" = Mobile
+TARGET_PROJECTS = {"en", "en.m"} 
+
+with gzip.open("pageviews.gz", "rt", encoding="utf-8", errors="ignore") as f:
+    for i, line in enumerate(f):
+        # Optional: Uncomment the next two lines to debug the file format
+        # if i < 5: print(f"Debug line {i}: {line.strip()}")
+        
+        parts = line.split()
+        if len(parts) < 3:
+            continue
+
+        project, title, views = parts[:3]
+
+        # ✅ FIX: Check against standard dump codes
+        if project not in TARGET_PROJECTS:
+            continue
+
+        # Skip non-article namespaces
+        if title.startswith(("Special:", "File:", "Category:", "Talk:", "User:", "User_talk:")):
+            continue
+
+        try:
+            counter[title.replace("_", " ")] += int(views)
+        except ValueError:
+            continue # Skip lines where views isn't a number
+
+print("Sorting articles by popularity...")
+
+top_titles = [t for t, _ in counter.most_common(TOP_N)]
+
+with open("topics.txt", "w", encoding="utf-8") as out:
+    for title in top_titles:
+        out.write(title + "\n")
+
+print(f"Done! topics.txt created with {len(top_titles)} titles.")
